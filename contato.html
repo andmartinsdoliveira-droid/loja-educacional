@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contato - Loja Educacional</title>
+    <meta name="description" content="Entre em contato com a Loja Educacional.">
+    <link rel="stylesheet" href="assets/css/styles-educacional.css">
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <header class="header">
+        <div class="container">
+            <h1>🎓 Loja Educacional</h1>
+            <p>Materiais de qualidade para transformar sua prática pedagógica</p>
+        </div>
+    </header>
+
+    <!-- Navegação -->
+    <nav class="nav">
+        <div class="container nav-container">
+            <ul class="nav-links">
+                <li><a href="index.html">🏠 Início</a></li>
+                <li><a href="sobre.html">📖 Sobre</a></li>
+                <li><a href="contato.html">📞 Contato</a></li>
+            </ul>
+            <div class="carrinho-info" onclick="abrirCarrinho()">
+                🛒 Carrinho
+                <span class="carrinho-contador" id="carrinho-contador">0</span>
+                <span id="carrinho-total">R$ 0,00</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Conteúdo Principal -->
+    <main class="container">
+        <section class="detalhes-produto">
+            <h2 class="text-center" style="margin-bottom: var(--espacamento-extra); color: var(--cor-primaria);">📞 Entre em Contato</h2>
+            
+            <p style="margin-bottom: var(--espacamento-grande); line-height: 1.8; text-align: center;">
+                Tem alguma dúvida, sugestão ou precisa de suporte? Entre em contato conosco! Estamos aqui para ajudar.
+            </p>
+
+            <div style="max-width: 600px; margin: 0 auto; padding: var(--espacamento-grande); border: 1px solid #E9ECEF; border-radius: var(--borda-radius); background-color: var(--cor-fundo);">
+                <h3 style="margin-bottom: var(--espacamento-medio); color: var(--cor-terciaria);">Informações de Contato</h3>
+                <p style="margin-bottom: var(--espacamento-medio);"><strong>📧 E-mail:</strong> <a href="mailto:contato@lojaeducacional.com" style="color: var(--cor-texto); text-decoration: none;">contato@lojaeducacional.com</a></p>
+                <p style="margin-bottom: var(--espacamento-medio);"><strong>📱 WhatsApp:</strong> <a href="https://wa.me/5511999999999" target="_blank" style="color: var(--cor-texto); text-decoration: none;">+55 (11) 99999-9999</a></p>
+                <p style="margin-bottom: var(--espacamento-medio);"><strong>⏰ Horário de Atendimento:</strong> Segunda a Sexta, das 9h às 18h (Horário de Brasília)</p>
+            </div>
+
+            <div style="max-width: 600px; margin: var(--espacamento-extra) auto 0 auto; padding: var(--espacamento-grande); border: 1px solid #E9ECEF; border-radius: var(--borda-radius); background-color: var(--cor-fundo);">
+                <h3 style="margin-bottom: var(--espacamento-medio); color: var(--cor-terciaria);">Envie uma Mensagem</h3>
+                <form>
+                    <div style="margin-bottom: var(--espacamento-medio);">
+                        <label for="nome" style="display: block; margin-bottom: var(--espacamento-pequeno); font-weight: bold;">Seu Nome:</label>
+                        <input type="text" id="nome" name="nome" class="busca-input" required>
+                    </div>
+                    <div style="margin-bottom: var(--espacamento-medio);">
+                        <label for="email" style="display: block; margin-bottom: var(--espacamento-pequeno); font-weight: bold;">Seu E-mail:</label>
+                        <input type="email" id="email" name="email" class="busca-input" required>
+                    </div>
+                    <div style="margin-bottom: var(--espacamento-medio);">
+                        <label for="assunto" style="display: block; margin-bottom: var(--espacamento-pequeno); font-weight: bold;">Assunto:</label>
+                        <input type="text" id="assunto" name="assunto" class="busca-input" required>
+                    </div>
+                    <div style="margin-bottom: var(--espacamento-medio);">
+                        <label for="mensagem" style="display: block; margin-bottom: var(--espacamento-pequeno); font-weight: bold;">Mensagem:</label>
+                        <textarea id="mensagem" name="mensagem" rows="5" class="busca-input" style="resize: vertical;" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primario">✉️ Enviar Mensagem</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal do Carrinho -->
+    <div id="modal-carrinho" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="fecharCarrinho()">&times;</span>
+            <h2>🛒 Seu Carrinho</h2>
+            <div id="carrinho-itens">
+                <!-- Os itens do carrinho serão carregados aqui -->
+            </div>
+            <div class="carrinho-total">
+                Total: <span id="carrinho-total-modal">R$ 0,00</span>
+            </div>
+            <div style="margin-top: 20px; text-align: center;">
+                <button onclick="limparCarrinho()" class="btn btn-secundario">🗑️ Limpar Carrinho</button>
+                <button onclick="finalizarCompra()" class="btn btn-primario">💳 Finalizar Compra</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/cart.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            atualizarCarrinhoUI();
+        });
+
+        function abrirCarrinho() {
+            document.getElementById("modal-carrinho").style.display = "block";
+            atualizarCarrinhoModal();
+        }
+
+        function fecharCarrinho() {
+            document.getElementById("modal-carrinho").style.display = "none";
+        }
+
+        function atualizarCarrinhoUI() {
+            const carrinho = obterCarrinho();
+            const contador = document.getElementById("carrinho-contador");
+            const total = document.getElementById("carrinho-total");
+            
+            const totalItens = carrinho.reduce((sum, item) => sum + item.quantidade, 0);
+            const totalPreco = carrinho.reduce((sum, item) => sum + (item.preco * item.quantidade), 0);
+            
+            contador.textContent = totalItens;
+            total.textContent = `R$ ${formatarPreco(totalPreco)}`;
+        }
+
+        function atualizarCarrinhoModal() {
+            const carrinho = obterCarrinho();
+            const container = document.getElementById("carrinho-itens");
+            const totalModal = document.getElementById("carrinho-total-modal");
+            
+            if (carrinho.length === 0) {
+                container.innerHTML = \'<p class="text-center">🛒 Seu carrinho está vazio</p>\';
+                totalModal.textContent = \'R$ 0,00\';
+                return;
+            }
+            
+            container.innerHTML = carrinho.map(item => `
+                <div class="carrinho-item">
+                    <div>
+                        <strong>${item.nome}</strong><br>
+                        <small>R$ ${formatarPreco(item.preco)} x ${item.quantidade}</small>
+                    </div>
+                    <div>
+                        <button onclick="alterarQuantidade(${item.id}, ${item.quantidade - 1})" class="btn btn-secundario" style="padding: 4px 8px;">-</button>
+                        <span style="margin: 0 10px;">${item.quantidade}</span>
+                        <button onclick="alterarQuantidade(${item.id}, ${item.quantidade + 1})" class="btn btn-secundario" style="padding: 4px 8px;">+</button>
+                        <button onclick="removerItem(${item.id})" class="btn btn-secundario" style="padding: 4px 8px; margin-left: 10px;">🗑️</button>
+                    </div>
+                </div>
+            `).join(\'\');
+            
+            const total = carrinho.reduce((sum, item) => sum + (item.preco * item.quantidade), 0);
+            totalModal.textContent = `R$ ${formatarPreco(total)}`;
+        }
+
+        function alterarQuantidade(produtoId, novaQuantidade) {
+            if (novaQuantidade <= 0) {
+                removerItem(produtoId);
+            } else {
+                const produtoNoCarrinho = obterCarrinho().find(item => item.id == produtoId);
+                if (produtoNoCarrinho) {
+                    adicionarItem(produtoNoCarrinho, novaQuantidade - obterQuantidadeItem(produtoId));
+                }
+            }
+            atualizarCarrinhoUI();
+            atualizarCarrinhoModal();
+        }
+
+        function limparCarrinho() {
+            if (confirm(\'🗑️ Tem certeza que deseja limpar o carrinho?\')) {
+                limparTodoCarrinho();
+                atualizarCarrinhoUI();
+                atualizarCarrinhoModal();
+                mostrarMensagem(\'🗑️ Carrinho limpo!\', \'sucesso\');
+            }
+        }
+
+        async function finalizarCompra() {
+            const carrinho = obterCarrinho();
+            if (carrinho.length === 0) {
+                alert(\'🛒 Seu carrinho está vazio!\');
+                return;
+            }
+            
+            alert(\'💳 Funcionalidade de pagamento será implementada em breve!\');
+        }
+
+        function formatarPreco(preco) {
+            const numero = parseFloat(preco) || 0;
+            return numero.toFixed(2).replace(\'.\', \',\');
+        }
+
+        function mostrarMensagem(texto, tipo) {
+            const mensagem = document.createElement(\'div\');
+            mensagem.className = `mensagem mensagem-${tipo}`;
+            mensagem.textContent = texto;
+            mensagem.style.position = \'fixed\';
+            mensagem.style.top = \'20px\';
+            mensagem.style.right = \'20px\';
+            mensagem.style.zIndex = \'1001\';
+            mensagem.style.maxWidth = \'300px\';
+            
+            document.body.appendChild(mensagem);
+            
+            setTimeout(() => {
+                if (mensagem.parentNode) {
+                    mensagem.parentNode.removeChild(mensagem);
+                }
+            }, 3000);
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById(\'modal-carrinho\');
+            if (event.target === modal) {
+                fecharCarrinho();
+            }
+        }
+    </script>
+</body>
+</html>
+

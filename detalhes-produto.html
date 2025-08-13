@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Produto - Loja Educacional</title>
+    <meta name="description" content="Veja todos os detalhes do produto educacional">
+    <link rel="stylesheet" href="assets/css/styles-educacional.css">
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <header class="header">
+        <div class="container">
+            <h1>🎓 Loja Educacional</h1>
+            <p>Materiais de qualidade para transformar sua prática pedagógica</p>
+        </div>
+    </header>
+
+    <!-- Navegação -->
+    <nav class="nav">
+        <div class="container nav-container">
+            <ul class="nav-links">
+                <li><a href="index.html">🏠 Início</a></li>
+                <li><a href="sobre.html">📖 Sobre</a></li>
+                <li><a href="contato.html">📞 Contato</a></li>
+            </ul>
+            <div class="carrinho-info" onclick="abrirCarrinho()">
+                🛒 Carrinho
+                <span class="carrinho-contador" id="carrinho-contador">0</span>
+                <span id="carrinho-total">R$ 0,00</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Conteúdo Principal -->
+    <main class="container">
+        <!-- Breadcrumb -->
+        <nav style="margin: 20px 0;">
+            <a href="index.html" style="color: var(--cor-primaria); text-decoration: none;">← Voltar ao catálogo</a>
+        </nav>
+
+        <!-- Loading -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Carregando produto...</p>
+        </div>
+
+        <!-- Detalhes do Produto -->
+        <section id="produto-detalhes" class="detalhes-produto" style="display: none;">
+            <div class="detalhes-grid">
+                <!-- Imagens do Produto -->
+                <div class="detalhes-imagem-container">
+                    <img id="imagem-principal" class="detalhes-produto-imagem-principal" src="" alt="">
+                    <div id="miniaturas-container" class="detalhes-produto-miniaturas">
+                        <!-- As miniaturas serão carregadas aqui -->
+                    </div>
+                </div>
+
+                <!-- Informações do Produto -->
+                <div class="detalhes-info">
+                    <h1 id="produto-nome">Nome do Produto</h1>
+                    <div id="produto-preco" class="detalhes-preco">R$ 0,00</div>
+                    <div id="produto-descricao" class="detalhes-descricao">
+                        Descrição do produto...
+                    </div>
+                    
+                    <!-- Informações Adicionais -->
+                    <div style="background-color: var(--cor-fundo); padding: var(--espacamento-grande); border-radius: var(--borda-radius); margin: var(--espacamento-grande) 0;">
+                        <h3 style="color: var(--cor-primaria); margin-bottom: var(--espacamento-medio);">📋 Informações do Produto</h3>
+                        <p><strong>Código:</strong> <span id="produto-codigo">-</span></p>
+                        <p><strong>Formato:</strong> Digital (Download)</p>
+                        <p><strong>Entrega:</strong> Imediata após pagamento</p>
+                    </div>
+
+                    <!-- Botões de Ação -->
+                    <div style="display: flex; gap: var(--espacamento-medio); flex-wrap: wrap; margin-top: var(--espacamento-grande);">
+                        <button id="btn-adicionar-carrinho" onclick="adicionarAoCarrinho()" class="btn btn-primario" style="flex: 1; min-width: 200px;">
+                            🛒 Adicionar ao Carrinho
+                        </button>
+                        <button onclick="comprarAgora()" class="btn btn-secundario" style="flex: 1; min-width: 200px;">
+                            ⚡ Comprar Agora
+                        </button>
+                    </div>
+
+                    <!-- Garantia e Segurança -->
+                    <div style="margin-top: var(--espacamento-extra); padding: var(--espacamento-grande); background: linear-gradient(135deg, #E8F5E8, #F0F8FF); border-radius: var(--borda-radius); border-left: 4px solid var(--cor-primaria);">
+                        <h3 style="color: var(--cor-primaria); margin-bottom: var(--espacamento-medio);">🛡️ Garantia e Segurança</h3>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="margin-bottom: var(--espacamento-pequeno);">✅ Pagamento 100% seguro</li>
+                            <li style="margin-bottom: var(--espacamento-pequeno);">✅ Download imediato após pagamento</li>
+                            <li style="margin-bottom: var(--espacamento-pequeno);">✅ Suporte técnico incluso</li>
+                            <li style="margin-bottom: var(--espacamento-pequeno);">✅ Satisfação garantida</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Erro -->
+        <div id="erro-container" style="display: none;">
+            <div class="mensagem mensagem-erro">
+                <h3>❌ Produto não encontrado</h3>
+                <p id="erro-mensagem">Não foi possível carregar os detalhes do produto.</p>
+                <a href="index.html" class="btn btn-primario">🏠 Voltar ao catálogo</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal do Carrinho -->
+    <div id="modal-carrinho" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="fecharCarrinho()">&times;</span>
+            <h2>🛒 Seu Carrinho</h2>
+            <div id="carrinho-itens">
+                <!-- Os itens do carrinho serão carregados aqui -->
+            </div>
+            <div class="carrinho-total">
+                Total: <span id="carrinho-total-modal">R$ 0,00</span>
+            </div>
+            <div style="margin-top: 20px; text-align: center;">
+                <button onclick="limparCarrinho()" class="btn btn-secundario">🗑️ Limpar Carrinho</button>
+                <button onclick="finalizarCompra()" class="btn btn-primario">💳 Finalizar Compra</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/cart.js"></script>
+    <script>
+        // ===== CONFIGURAÇÃO =====
+        // IMPORTANTE: Substitua pela URL do seu Google Apps Script
+        const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxdipqQR3TXF5NGtiYD8B50oT26B9bgb4uytKM_1EinJs8F66-INc_dommnf0DF4M4wPA/exec';
+        
+        // ===== VARIÁVEIS GLOBAIS =====
+        let produtoAtual = null;
+        let imagensDisponiveis = [];
+
+        // ===== INICIALIZAÇÃO =====
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Iniciando página de detalhes...');
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const produtoId = urlParams.get('id');
+            
+            if (!produtoId) {
+                mostrarErro('ID do produto não fornecido na URL.');
+                return;
+            }
+            
+            carregarProduto(produtoId);
+            atualizarCarrinhoUI();
+        });
+
+        // ===== CARREGAMENTO DO PRODUTO =====
+        async function carregarProduto(produtoId) {
+            try {
+                mostrarLoading(true);
+                esconderErro();
+                
+                console.log('📡 Buscando produto do backend...');
+                const response = await fetch(BACKEND_URL);
+                
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP: ${response.status}`);
+                }
+                
+                const produtos = await response.json();
+                console.log('✅ Produtos recebidos:', produtos);
+                
+                if (produtos.error) {
+                    throw new Error(produtos.error);
+                }
+                
+                produtoAtual = produtos.find(p => p.ID == produtoId);
+                
+                if (!produtoAtual) {
+                    throw new Error('Produto não encontrado.');
+                }
+                
+                exibirProduto();
+                
+            } catch (error) {
+                console.error('❌ Erro ao carregar produto:', error);
+                mostrarErro(`Não foi possível carregar o produto: ${error.message}`);
+            } finally {
+                mostrarLoading(false);
+            }
+        }
+
+        // ===== EXIBIÇÃO DO PRODUTO =====
+        function exibirProduto() {
+            if (!produtoAtual) return;
+            
+            // Atualizar título da página
+            document.title = `${produtoAtual.Nome} - Loja Educacional`;
+            
+            // Preencher informações básicas
+            document.getElementById('produto-nome').textContent = produtoAtual.Nome;
+            document.getElementById('produto-preco').textContent = `R$ ${formatarPreco(produtoAtual.Preço)}`;
+            document.getElementById('produto-descricao').textContent = produtoAtual.Descrição || 'Descrição não disponível';
+            document.getElementById('produto-codigo').textContent = produtoAtual.Codigo || 'N/A';
+            
+            // Configurar imagens
+            configurarImagens();
+            
+            // Mostrar seção de detalhes
+            document.getElementById('produto-detalhes').style.display = 'block';
+        }
+
+        // ===== CONFIGURAÇÃO DE IMAGENS =====
+        function configurarImagens() {
+            imagensDisponiveis = [];
+            
+            // Adicionar imagem principal se disponível
+            if (produtoAtual.URL_Imagem) {
+                imagensDisponiveis.push(produtoAtual.URL_Imagem);
+            }
+            
+            // Adicionar imagens adicionais se disponíveis (URL_Imagem2, URL_Imagem3, etc.)
+            for (let i = 2; i <= 5; i++) {
+                const campoImagem = `URL_Imagem${i}`;
+                if (produtoAtual[campoImagem]) {
+                    imagensDisponiveis.push(produtoAtual[campoImagem]);
+                }
+            }
+            
+            // Se não há imagens, usar placeholder
+            if (imagensDisponiveis.length === 0) {
+                imagensDisponiveis.push('assets/images/placeholder.jpg');
+            }
+            
+            // Configurar imagem principal
+            const imagemPrincipal = document.getElementById('imagem-principal');
+            imagemPrincipal.src = imagensDisponiveis[0];
+            imagemPrincipal.alt = produtoAtual.Nome;
+            imagemPrincipal.onerror = function() {
+                this.src = 'assets/images/placeholder.jpg';
+            };
+            
+            // Configurar miniaturas
+            configurarMiniaturas();
+        }
+
+        function configurarMiniaturas() {
+            const container = document.getElementById('miniaturas-container');
+            
+            if (imagensDisponiveis.length <= 1) {
+                container.style.display = 'none';
+                return;
+            }
+            
+            container.innerHTML = imagensDisponiveis.map((url, index) => `
+                <img src="${url}" 
+                     alt="Imagem ${index + 1}" 
+                     onclick="trocarImagemPrincipal('${url}')"
+                     onerror="this.src='assets/images/placeholder.jpg'"
+                     ${index === 0 ? 'class="active"' : ''}>
+            `).join('');
+            
+            container.style.display = 'flex';
+        }
+
+        function trocarImagemPrincipal(novaUrl) {
+            const imagemPrincipal = document.getElementById('imagem-principal');
+            imagemPrincipal.src = novaUrl;
+            
+            // Atualizar classe active nas miniaturas
+            const miniaturas = document.querySelectorAll('#miniaturas-container img');
+            miniaturas.forEach(img => {
+                img.classList.remove('active');
+                if (img.src === novaUrl) {
+                    img.classList.add('active');
+                }
+            });
+        }
+
+        // ===== CARRINHO =====
+        function adicionarAoCarrinho() {
+            if (!produtoAtual) return;
+            
+            adicionarItem(produtoAtual);
+            mostrarMensagem(`✅ ${produtoAtual.Nome} adicionado ao carrinho!`, 'sucesso');
+            atualizarCarrinhoUI();
+            
+            // Feedback visual no botão
+            const btn = document.getElementById('btn-adicionar-carrinho');
+            const textoOriginal = btn.innerHTML;
+            btn.innerHTML = '✅ Adicionado!';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                btn.innerHTML = textoOriginal;
+                btn.disabled = false;
+            }, 2000);
+        }
+
+        function comprarAgora() {
+            if (!produtoAtual) return;
+            
+            // Limpar carrinho e adicionar apenas este produto
+            limparTodoCarrinho();
+            adicionarItem(produtoAtual);
+            
+            // Redirecionar para finalização (ou abrir modal de pagamento)
+            alert('💳 Funcionalidade de compra direta será implementada em breve!');
+        }
+
+        function abrirCarrinho() {
+            document.getElementById('modal-carrinho').style.display = 'block';
+            atualizarCarrinhoModal();
+        }
+
+        function fecharCarrinho() {
+            document.getElementById('modal-carrinho').style.display = 'none';
+        }
+
+        function atualizarCarrinhoUI() {
+            const carrinho = obterCarrinho();
+            const contador = document.getElementById('carrinho-contador');
+            const total = document.getElementById('carrinho-total');
+            
+            const totalItens = carrinho.reduce((sum, item) => sum + item.quantidade, 0);
+            const totalPreco = carrinho.reduce((sum, item) => sum + (item.preco * item.quantidade), 0);
+            
+            contador.textContent = totalItens;
+            total.textContent = `R$ ${formatarPreco(totalPreco)}`;
+        }
+
+        function atualizarCarrinhoModal() {
+            const carrinho = obterCarrinho();
+            const container = document.getElementById('carrinho-itens');
+            const totalModal = document.getElementById('carrinho-total-modal');
+            
+            if (carrinho.length === 0) {
+                container.innerHTML = '<p class="text-center">🛒 Seu carrinho está vazio</p>';
+                totalModal.textContent = 'R$ 0,00';
+                return;
+            }
+            
+            container.innerHTML = carrinho.map(item => `
+                <div class="carrinho-item">
+                    <div>
+                        <strong>${item.nome}</strong><br>
+                        <small>R$ ${formatarPreco(item.preco)} x ${item.quantidade}</small>
+                    </div>
+                    <div>
+                        <button onclick="alterarQuantidade(${item.id}, ${item.quantidade - 1})" class="btn btn-secundario" style="padding: 4px 8px;">-</button>
+                        <span style="margin: 0 10px;">${item.quantidade}</span>
+                        <button onclick="alterarQuantidade(${item.id}, ${item.quantidade + 1})" class="btn btn-secundario" style="padding: 4px 8px;">+</button>
+                        <button onclick="removerItem(${item.id})" class="btn btn-secundario" style="padding: 4px 8px; margin-left: 10px;">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+            
+            const total = carrinho.reduce((sum, item) => sum + (item.preco * item.quantidade), 0);
+            totalModal.textContent = `R$ ${formatarPreco(total)}`;
+        }
+
+        function alterarQuantidade(produtoId, novaQuantidade) {
+            if (novaQuantidade <= 0) {
+                removerItem(produtoId);
+            } else {
+                // Buscar produto para adicionar diferença
+                if (produtoAtual && produtoAtual.ID == produtoId) {
+                    adicionarItem(produtoAtual, novaQuantidade - obterQuantidadeItem(produtoId));
+                }
+            }
+            atualizarCarrinhoUI();
+            atualizarCarrinhoModal();
+        }
+
+        function limparCarrinho() {
+            if (confirm('🗑️ Tem certeza que deseja limpar o carrinho?')) {
+                limparTodoCarrinho();
+                atualizarCarrinhoUI();
+                atualizarCarrinhoModal();
+                mostrarMensagem('🗑️ Carrinho limpo!', 'sucesso');
+            }
+        }
+
+        async function finalizarCompra() {
+            const carrinho = obterCarrinho();
+            if (carrinho.length === 0) {
+                alert('🛒 Seu carrinho está vazio!');
+                return;
+            }
+            
+            // Aqui você pode implementar a integração com o Mercado Pago
+            alert('💳 Funcionalidade de pagamento será implementada em breve!');
+        }
+
+        // ===== UTILITÁRIOS =====
+        function formatarPreco(preco) {
+            const numero = parseFloat(preco) || 0;
+            return numero.toFixed(2).replace('.', ',');
+        }
+
+        function mostrarLoading(mostrar) {
+            document.getElementById('loading').style.display = mostrar ? 'flex' : 'none';
+            document.getElementById('produto-detalhes').style.display = mostrar ? 'none' : 'block';
+        }
+
+        function mostrarErro(mensagem) {
+            document.getElementById('erro-mensagem').textContent = mensagem;
+            document.getElementById('erro-container').style.display = 'block';
+            document.getElementById('produto-detalhes').style.display = 'none';
+        }
+
+        function esconderErro() {
+            document.getElementById('erro-container').style.display = 'none';
+        }
+
+        function mostrarMensagem(texto, tipo) {
+            // Criar elemento de mensagem temporária
+            const mensagem = document.createElement('div');
+            mensagem.className = `mensagem mensagem-${tipo}`;
+            mensagem.textContent = texto;
+            mensagem.style.position = 'fixed';
+            mensagem.style.top = '20px';
+            mensagem.style.right = '20px';
+            mensagem.style.zIndex = '1001';
+            mensagem.style.maxWidth = '300px';
+            
+            document.body.appendChild(mensagem);
+            
+            // Remover após 3 segundos
+            setTimeout(() => {
+                if (mensagem.parentNode) {
+                    mensagem.parentNode.removeChild(mensagem);
+                }
+            }, 3000);
+        }
+
+        // ===== EVENT LISTENERS =====
+        // Fechar modal ao clicar fora dele
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal-carrinho');
+            if (event.target === modal) {
+                fecharCarrinho();
+            }
+        }
+    </script>
+</body>
+</html>
+

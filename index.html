@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loja Educacional - Materiais para Professoras</title>
+    <meta name="description" content="Materiais educacionais de qualidade para professoras: e-books, cursos, jogos pedagógicos e muito mais!">
+    <link rel="stylesheet" href="assets/css/styles-educacional.css">
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <header class="header">
+        <div class="container">
+            <h1>🎓 Loja Educacional</h1>
+            <p>Materiais de qualidade para transformar sua prática pedagógica</p>
+        </div>
+    </header>
+
+    <!-- Navegação -->
+    <nav class="nav">
+        <div class="container nav-container">
+            <ul class="nav-links">
+                <li><a href="index.html">🏠 Início</a></li>
+                <li><a href="sobre.html">📖 Sobre</a></li>
+                <li><a href="contato.html">📞 Contato</a></li>
+            </ul>
+            <div class="carrinho-info" onclick="abrirCarrinho()">
+                🛒 Carrinho
+                <span class="carrinho-contador" id="carrinho-contador">0</span>
+                <span id="carrinho-total">R$ 0,00</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Conteúdo Principal -->
+    <main class="container">
+        <!-- Busca e Filtros -->
+        <section class="busca-filtros">
+            <div class="busca-container">
+                <input type="text" id="busca-input" class="busca-input" placeholder="🔍 Buscar produtos...">
+                <button onclick="buscarProdutos()" class="btn-buscar">Buscar</button>
+            </div>
+            <div id="resultados-busca" class="mensagem" style="display: none;"></div>
+        </section>
+
+        <!-- Loading -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Carregando produtos...</p>
+        </div>
+
+        <!-- Grid de Produtos -->
+        <section id="produtos-container" class="produtos-grid" style="display: none;">
+            <!-- Os produtos serão carregados aqui via JavaScript -->
+        </section>
+
+        <!-- Paginação -->
+        <div id="paginacao" class="paginacao" style="display: none;">
+            <!-- A paginação será gerada via JavaScript -->
+        </div>
+
+        <!-- Mensagens de Erro -->
+        <div id="erro-container" style="display: none;">
+            <div class="mensagem mensagem-erro">
+                <h3>❌ Erro ao carregar produtos</h3>
+                <p id="erro-mensagem"></p>
+                <button onclick="carregarProdutos()" class="btn btn-primario">🔄 Tentar novamente</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal do Carrinho -->
+    <div id="modal-carrinho" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="fecharCarrinho()">&times;</span>
+            <h2>🛒 Seu Carrinho</h2>
+            <div id="carrinho-itens">
+                <!-- Os itens do carrinho serão carregados aqui -->
+            </div>
+            <div class="carrinho-total">
+                Total: <span id="carrinho-total-modal">R$ 0,00</span>
+            </div>
+            <div style="margin-top: 20px; text-align: center;">
+                <button onclick="limparCarrinho()" class="btn btn-secundario">🗑️ Limpar Carrinho</button>
+                <button onclick="finalizarCompra()" class="btn btn-primario">💳 Finalizar Compra</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/cart.js"></script>
+    <script>
+        // ===== CONFIGURAÇÃO =====
+        // IMPORTANTE: Substitua pela URL do seu Google Apps Script
+        const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxdipqQR3TXF5NGtiYD8B50oT26B9bgb4uytKM_1EinJs8F66-INc_dommnf0DF4M4wPA/exec';
+        
+        // ===== VARIÁVEIS GLOBAIS =====
+        let todosProdutos = [];
+        let produtosFiltrados = [];
+        let paginaAtual = 1;
+        const produtosPorPagina = 12;
+
+        // ===== INICIALIZAÇÃO =====
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Iniciando loja educacional...');
+            carregarProdutos();
+            atualizarCarrinhoUI();
+        });
+
+        // ===== CARREGAMENTO DE PRODUTOS =====
+        async function carregarProdutos() {
+            try {
+                mostrarLoading(true);
+                esconderErro();
+                
+                console.log('📡 Buscando produtos do backend...');
+                const response = await fetch(BACKEND_URL);
+                
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('✅ Produtos recebidos:', data);
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                todosProdutos = data;
+                produtosFiltrados = [...todosProdutos];
+                
+                if (todosProdutos.length === 0) {
+                    mostrarMensagem('ℹ️ Nenhum produto encontrado. Verifique se a planilha contém dados.', 'aviso');
+                } else {
+                    exibirProdutos();
+                    configurarPaginacao();
+                }
+                
+            } catch (error) {
+                console.error('❌ Erro ao carregar produtos:', error);
+                mostrarErro(`Não foi possível carregar os produtos: ${error.message}`);
+            } finally {
+                mostrarLoading(false);
+            }
+        }
+
+        // ===== EXIBIÇÃO DE PRODUTOS =====
+        function exibirProdutos() {
+            const container = document.getElementById('produtos-container');
+            const inicio = (paginaAtual - 1) * produtosPorPagina;
+            const fim = inicio + produtosPorPagina;
+            const produtosPagina = produtosFiltrados.slice(inicio, fim);
+            
+            if (produtosPagina.length === 0) {
+                container.innerHTML = '<div class="mensagem mensagem-aviso">📦 Nenhum produto encontrado.</div>';
+                container.style.display = 'block';
+                return;
+            }
+            
+            container.innerHTML = produtosPagina.map(produto => `
+                <div class="produto-card fade-in">
+                    <div class="produto-imagem">
+                        ${produto.URL_Imagem ? 
+                            `<img src="${produto.URL_Imagem}" alt="${produto.Nome}" onerror="this.src='assets/images/placeholder.jpg'">` :
+                            `<img src="assets/images/placeholder.jpg" alt="Imagem não disponível">`
+                        }
+                    </div>
+                    <div class="produto-info">
+                        <h3 class="produto-nome">${produto.Nome}</h3>
+                        <p class="produto-descricao">${produto.Descrição || 'Descrição não disponível'}</p>
+                        <div class="produto-preco">R$ ${formatarPreco(produto.Preço)}</div>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <a href="detalhes-produto.html?id=${produto.ID}" class="btn btn-detalhes">👁️ Ver Detalhes</a>
+                            <button onclick="adicionarAoCarrinho(${produto.ID})" class="btn btn-primario">🛒 Adicionar</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            container.style.display = 'grid';
+        }
+
+        // ===== BUSCA DE PRODUTOS =====
+        function buscarProdutos() {
+            const termo = document.getElementById('busca-input').value.toLowerCase().trim();
+            
+            if (termo === '') {
+                produtosFiltrados = [...todosProdutos];
+                document.getElementById('resultados-busca').style.display = 'none';
+            } else {
+                produtosFiltrados = todosProdutos.filter(produto => 
+                    produto.Nome.toLowerCase().includes(termo) ||
+                    (produto.Descrição && produto.Descrição.toLowerCase().includes(termo)) ||
+                    (produto.Codigo && produto.Codigo.toLowerCase().includes(termo))
+                );
+                
+                const resultadosDiv = document.getElementById('resultados-busca');
+                resultadosDiv.textContent = `🔍 ${produtosFiltrados.length} produto(s) encontrado(s) para "${termo}"`;
+                resultadosDiv.className = 'mensagem mensagem-sucesso';
+                resultadosDiv.style.display = 'block';
+            }
+            
+            paginaAtual = 1;
+            exibirProdutos();
+            configurarPaginacao();
+        }
+
+        // ===== PAGINAÇÃO =====
+        function configurarPaginacao() {
+            const totalPaginas = Math.ceil(produtosFiltrados.length / produtosPorPagina);
+            const paginacaoDiv = document.getElementById('paginacao');
+            
+            if (totalPaginas <= 1) {
+                paginacaoDiv.style.display = 'none';
+                return;
+            }
+            
+            let html = '';
+            
+            // Botão anterior
+            html += `<button onclick="irParaPagina(${paginaAtual - 1})" ${paginaAtual === 1 ? 'disabled' : ''}>← Anterior</button>`;
+            
+            // Números das páginas
+            for (let i = 1; i <= totalPaginas; i++) {
+                if (i === paginaAtual || i === 1 || i === totalPaginas || (i >= paginaAtual - 1 && i <= paginaAtual + 1)) {
+                    html += `<button onclick="irParaPagina(${i})" ${i === paginaAtual ? 'class="ativo"' : ''}>${i}</button>`;
+                } else if (i === paginaAtual - 2 || i === paginaAtual + 2) {
+                    html += '<span>...</span>';
+                }
+            }
+            
+            // Botão próximo
+            html += `<button onclick="irParaPagina(${paginaAtual + 1})" ${paginaAtual === totalPaginas ? 'disabled' : ''}>Próximo →</button>`;
+            
+            paginacaoDiv.innerHTML = html;
+            paginacaoDiv.style.display = 'flex';
+        }
+
+        function irParaPagina(pagina) {
+            const totalPaginas = Math.ceil(produtosFiltrados.length / produtosPorPagina);
+            if (pagina >= 1 && pagina <= totalPaginas) {
+                paginaAtual = pagina;
+                exibirProdutos();
+                configurarPaginacao();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // ===== CARRINHO =====
+        function adicionarAoCarrinho(produtoId) {
+            const produto = todosProdutos.find(p => p.ID == produtoId);
+            if (produto) {
+                adicionarItem(produto);
+                mostrarMensagem(`✅ ${produto.Nome} adicionado ao carrinho!`, 'sucesso');
+                atualizarCarrinhoUI();
+            }
+        }
+
+        function abrirCarrinho() {
+            document.getElementById('modal-carrinho').style.display = 'block';
+            atualizarCarrinhoModal();
+        }
+
+        function fecharCarrinho() {
+            document.getElementById('modal-carrinho').style.display = 'none';
+        }
+
+        function atualizarCarrinhoUI() {
+            const carrinho = obterCarrinho();
+            const contador = document.getElementById('carrinho-contador');
+            const total = document.getElementById('carrinho-total');
+            
+            const totalItens = carrinho.reduce((sum, item) => sum + item.quantidade, 0);
+            const totalPreco = carrinho.reduce((sum, item) => sum + (item.preco * item.quantidade), 0);
+            
+            contador.textContent = totalItens;
+            total.textContent = `R$ ${formatarPreco(totalPreco)}`;
+        }
+
+        function atualizarCarrinhoModal() {
+            const carrinho = obterCarrinho();
+            const container = document.getElementById('carrinho-itens');
+            const totalModal = document.getElementById('carrinho-total-modal');
+            
+            if (carrinho.length === 0) {
+                container.innerHTML = '<p class="text-center">🛒 Seu carrinho está vazio</p>';
+                totalModal.textContent = 'R$ 0,00';
+                return;
+            }
+            
+            container.innerHTML = carrinho.map(item => `
+                <div class="carrinho-item">
+                    <div>
+                        <strong>${item.nome}</strong><br>
+                        <small>R$ ${formatarPreco(item.preco)} x ${item.quantidade}</small>
+                    </div>
+                    <div>
+                        <button onclick="alterarQuantidade(${item.id}, ${item.quantidade - 1})" class="btn btn-secundario" style="padding: 4px 8px;">-</button>
+                        <span style="margin: 0 10px;">${item.quantidade}</span>
+                        <button onclick="alterarQuantidade(${item.id}, ${item.quantidade + 1})" class="btn btn-secundario" style="padding: 4px 8px;">+</button>
+                        <button onclick="removerItem(${item.id})" class="btn btn-secundario" style="padding: 4px 8px; margin-left: 10px;">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+            
+            const total = carrinho.reduce((sum, item) => sum + (item.preco * item.quantidade), 0);
+            totalModal.textContent = `R$ ${formatarPreco(total)}`;
+        }
+
+        function alterarQuantidade(produtoId, novaQuantidade) {
+            if (novaQuantidade <= 0) {
+                removerItem(produtoId);
+            } else {
+                const produto = todosProdutos.find(p => p.ID == produtoId);
+                if (produto) {
+                    adicionarItem(produto, novaQuantidade - obterQuantidadeItem(produtoId));
+                }
+            }
+            atualizarCarrinhoUI();
+            atualizarCarrinhoModal();
+        }
+
+        function limparCarrinho() {
+            if (confirm('🗑️ Tem certeza que deseja limpar o carrinho?')) {
+                limparTodoCarrinho();
+                atualizarCarrinhoUI();
+                atualizarCarrinhoModal();
+                mostrarMensagem('🗑️ Carrinho limpo!', 'sucesso');
+            }
+        }
+
+        async function finalizarCompra() {
+            const carrinho = obterCarrinho();
+            if (carrinho.length === 0) {
+                alert('🛒 Seu carrinho está vazio!');
+                return;
+            }
+            
+            // Aqui você pode implementar a integração com o Mercado Pago
+            // Por enquanto, vamos apenas mostrar uma mensagem
+            alert('💳 Funcionalidade de pagamento será implementada em breve!');
+        }
+
+        // ===== UTILITÁRIOS =====
+        function formatarPreco(preco) {
+            const numero = parseFloat(preco) || 0;
+            return numero.toFixed(2).replace('.', ',');
+        }
+
+        function mostrarLoading(mostrar) {
+            document.getElementById('loading').style.display = mostrar ? 'flex' : 'none';
+            document.getElementById('produtos-container').style.display = mostrar ? 'none' : 'grid';
+        }
+
+        function mostrarErro(mensagem) {
+            document.getElementById('erro-mensagem').textContent = mensagem;
+            document.getElementById('erro-container').style.display = 'block';
+            document.getElementById('produtos-container').style.display = 'none';
+            document.getElementById('paginacao').style.display = 'none';
+        }
+
+        function esconderErro() {
+            document.getElementById('erro-container').style.display = 'none';
+        }
+
+        function mostrarMensagem(texto, tipo) {
+            // Criar elemento de mensagem temporária
+            const mensagem = document.createElement('div');
+            mensagem.className = `mensagem mensagem-${tipo}`;
+            mensagem.textContent = texto;
+            mensagem.style.position = 'fixed';
+            mensagem.style.top = '20px';
+            mensagem.style.right = '20px';
+            mensagem.style.zIndex = '1001';
+            mensagem.style.maxWidth = '300px';
+            
+            document.body.appendChild(mensagem);
+            
+            // Remover após 3 segundos
+            setTimeout(() => {
+                if (mensagem.parentNode) {
+                    mensagem.parentNode.removeChild(mensagem);
+                }
+            }, 3000);
+        }
+
+        // ===== EVENT LISTENERS =====
+        document.getElementById('busca-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                buscarProdutos();
+            }
+        });
+
+        // Fechar modal ao clicar fora dele
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal-carrinho');
+            if (event.target === modal) {
+                fecharCarrinho();
+            }
+        }
+    </script>
+</body>
+</html>
+

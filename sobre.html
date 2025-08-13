@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobre Nós - Loja Educacional</title>
+    <meta name="description" content="Conheça a missão e os valores da Loja Educacional.">
+    <link rel="stylesheet" href="assets/css/styles-educacional.css">
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <header class="header">
+        <div class="container">
+            <h1>🎓 Loja Educacional</h1>
+            <p>Materiais de qualidade para transformar sua prática pedagógica</p>
+        </div>
+    </header>
+
+    <!-- Navegação -->
+    <nav class="nav">
+        <div class="container nav-container">
+            <ul class="nav-links">
+                <li><a href="index.html">🏠 Início</a></li>
+                <li><a href="sobre.html">📖 Sobre</a></li>
+                <li><a href="contato.html">📞 Contato</a></li>
+            </ul>
+            <div class="carrinho-info" onclick="abrirCarrinho()">
+                🛒 Carrinho
+                <span class="carrinho-contador" id="carrinho-contador">0</span>
+                <span id="carrinho-total">R$ 0,00</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Conteúdo Principal -->
+    <main class="container">
+        <section class="detalhes-produto">
+            <h2 class="text-center" style="margin-bottom: var(--espacamento-extra); color: var(--cor-primaria);">📖 Sobre a Loja Educacional</h2>
+            
+            <p style="margin-bottom: var(--espacamento-grande); line-height: 1.8;">
+                Bem-vinda à <strong>Loja Educacional</strong>, seu parceiro dedicado na jornada de transformar a educação. Acreditamos que a paixão por ensinar, combinada com os recursos certos, pode criar experiências de aprendizado verdadeiramente impactantes para alunos de todas as idades.
+            </p>
+
+            <h3 style="margin-bottom: var(--espacamento-medio); color: var(--cor-terciaria);">Nossa Missão</h3>
+            <p style="margin-bottom: var(--espacamento-grande); line-height: 1.8;">
+                Nossa missão é empoderar professoras e educadores, fornecendo materiais didáticos digitais de alta qualidade, inovadores e acessíveis. Queremos simplificar o planejamento de aulas, enriquecer o ambiente de sala de aula e inspirar a criatividade, permitindo que você se concentre no que faz de melhor: ensinar.
+            </p>
+
+            <h3 style="margin-bottom: var(--espacamento-medio); color: var(--cor-terciaria);">Nossos Valores</h3>
+            <ul style="list-style: none; padding: 0; margin-bottom: var(--espacamento-extra);">
+                <li style="margin-bottom: var(--espacamento-medio);">✅ <strong>Qualidade:</strong> Todos os nossos materiais são cuidadosamente elaborados e revisados por especialistas em educação.</li>
+                <li style="margin-bottom: var(--espacamento-medio);">💡 <strong>Inovação:</strong> Buscamos constantemente novas abordagens e tecnologias para tornar o aprendizado mais dinâmico e envolvente.</li>
+                <li style="margin-bottom: var(--espacamento-medio);">🤝 <strong>Acessibilidade:</strong> Comprometemo-nos a oferecer recursos a preços justos, garantindo que a educação de qualidade esteja ao alcance de todos.</li>
+                <li style="margin-bottom: var(--espacamento-medio);">🌱 <strong>Crescimento:</strong> Apoiamos o desenvolvimento contínuo de educadores, oferecendo ferramentas que facilitam a adaptação às novas demandas pedagógicas.</li>
+            </ul>
+
+            <h3 style="margin-bottom: var(--espacamento-medio); color: var(--cor-terciaria);">O Que Oferecemos</h3>
+            <p style="margin-bottom: var(--espacamento-grande); line-height: 1.8;">
+                Nossa coleção inclui uma vasta gama de infoprodutos, desde e-books com estratégias de ensino, cursos online sobre metodologias ativas, jogos pedagógicos interativos, até pacotes completos de atividades para diversas disciplinas e faixas etárias. Cada material é pensado para ser prático, relevante e fácil de integrar ao seu dia a dia.
+            </p>
+
+            <p class="text-center" style="font-style: italic; color: var(--cor-texto-claro);">
+                Junte-se a nós e descubra como a Loja Educacional pode enriquecer sua jornada profissional!
+            </p>
+        </section>
+    </main>
+
+    <!-- Modal do Carrinho -->
+    <div id="modal-carrinho" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="fecharCarrinho()">&times;</span>
+            <h2>🛒 Seu Carrinho</h2>
+            <div id="carrinho-itens">
+                <!-- Os itens do carrinho serão carregados aqui -->
+            </div>
+            <div class="carrinho-total">
+                Total: <span id="carrinho-total-modal">R$ 0,00</span>
+            </div>
+            <div style="margin-top: 20px; text-align: center;">
+                <button onclick="limparCarrinho()" class="btn btn-secundario">🗑️ Limpar Carrinho</button>
+                <button onclick="finalizarCompra()" class="btn btn-primario">💳 Finalizar Compra</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/cart.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            atualizarCarrinhoUI();
+        });
+
+        function abrirCarrinho() {
+            document.getElementById("modal-carrinho").style.display = "block";
+            atualizarCarrinhoModal();
+        }
+
+        function fecharCarrinho() {
+            document.getElementById("modal-carrinho").style.display = "none";
+        }
+
+        function atualizarCarrinhoUI() {
+            const carrinho = obterCarrinho();
+            const contador = document.getElementById("carrinho-contador");
+            const total = document.getElementById("carrinho-total");
+            
+            const totalItens = carrinho.reduce((sum, item) => sum + item.quantidade, 0);
+            const totalPreco = carrinho.reduce((sum, item) => sum + (item.preco * item.quantidade), 0);
+            
+            contador.textContent = totalItens;
+            total.textContent = `R$ ${formatarPreco(totalPreco)}`;
+        }
+
+        function atualizarCarrinhoModal() {
+            const carrinho = obterCarrinho();
+            const container = document.getElementById("carrinho-itens");
+            const totalModal = document.getElementById("carrinho-total-modal");
+            
+            if (carrinho.length === 0) {
+                container.innerHTML = '<p class="text-center">🛒 Seu carrinho está vazio</p>';
+                totalModal.textContent = 'R$ 0,00';
+                return;
+            }
+            
+            container.innerHTML = carrinho.map(item => `
+                <div class="carrinho-item">
+                    <div>
+                        <strong>${item.nome}</strong><br>
+                        <small>R$ ${formatarPreco(item.preco)} x ${item.quantidade}</small>
+                    </div>
+                    <div>
+                        <button onclick="alterarQuantidade(${item.id}, ${item.quantidade - 1})" class="btn btn-secundario" style="padding: 4px 8px;">-</button>
+                        <span style="margin: 0 10px;">${item.quantidade}</span>
+                        <button onclick="alterarQuantidade(${item.id}, ${item.quantidade + 1})" class="btn btn-secundario" style="padding: 4px 8px;">+</button>
+                        <button onclick="removerItem(${item.id})" class="btn btn-secundario" style="padding: 4px 8px; margin-left: 10px;">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+            
+            const total = carrinho.reduce((sum, item) => sum + (item.preco * item.quantidade), 0);
+            totalModal.textContent = `R$ ${formatarPreco(total)}`;
+        }
+
+        function alterarQuantidade(produtoId, novaQuantidade) {
+            if (novaQuantidade <= 0) {
+                removerItem(produtoId);
+            } else {
+                // Para a página Sobre, não temos o produto completo, então apenas atualizamos a quantidade
+                // Isso é um placeholder, em uma loja real, você buscaria o produto pelo ID
+                const produtoNoCarrinho = obterCarrinho().find(item => item.id == produtoId);
+                if (produtoNoCarrinho) {
+                    adicionarItem(produtoNoCarrinho, novaQuantidade - obterQuantidadeItem(produtoId));
+                }
+            }
+            atualizarCarrinhoUI();
+            atualizarCarrinhoModal();
+        }
+
+        function limparCarrinho() {
+            if (confirm('🗑️ Tem certeza que deseja limpar o carrinho?')) {
+                limparTodoCarrinho();
+                atualizarCarrinhoUI();
+                atualizarCarrinhoModal();
+                mostrarMensagem('🗑️ Carrinho limpo!', 'sucesso');
+            }
+        }
+
+        async function finalizarCompra() {
+            const carrinho = obterCarrinho();
+            if (carrinho.length === 0) {
+                alert('🛒 Seu carrinho está vazio!');
+                return;
+            }
+            
+            // Aqui você pode implementar a integração com o Mercado Pago
+            alert('💳 Funcionalidade de pagamento será implementada em breve!');
+        }
+
+        // ===== UTILITÁRIOS =====
+        function formatarPreco(preco) {
+            const numero = parseFloat(preco) || 0;
+            return numero.toFixed(2).replace('.', ',');
+        }
+
+        function mostrarMensagem(texto, tipo) {
+            const mensagem = document.createElement('div');
+            mensagem.className = `mensagem mensagem-${tipo}`;
+            mensagem.textContent = texto;
+            mensagem.style.position = 'fixed';
+            mensagem.style.top = '20px';
+            mensagem.style.right = '20px';
+            mensagem.style.zIndex = '1001';
+            mensagem.style.maxWidth = '300px';
+            
+            document.body.appendChild(mensagem);
+            
+            setTimeout(() => {
+                if (mensagem.parentNode) {
+                    mensagem.parentNode.removeChild(mensagem);
+                }
+            }, 3000);
+        }
+
+        // Fechar modal ao clicar fora dele
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal-carrinho');
+            if (event.target === modal) {
+                fecharCarrinho();
+            }
+        }
+    </script>
+</body>
+</html>
+
